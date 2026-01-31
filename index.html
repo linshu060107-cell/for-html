@@ -89,24 +89,12 @@
 
          .bottom-bar { 
     position: fixed; 
+    bottom: 0; 
     left: 0; 
     width: 100%; 
-    z-index: 1000; 
-    transition: transform 0.3s ease;
-    
-    /* 关键修复：使用 bottom 而不是依赖 padding */
-    bottom: 0;
-    
-    /* 使用 border-box，让 padding 包含在高度内 */
-    box-sizing: border-box;
-    
-    /* 固定总高度 = 图标区 + 安全区 */
-    height: calc(55px + env(safe-area-inset-bottom, 0px));
-    
-    /* 底部留出安全区空间 */
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-    padding-top: 0;
-    
+    height: 55px;
+    padding: 0;
+    margin-bottom: env(safe-area-inset-bottom, 0px);
     background: var(--bottom-bar-bg); 
     background-size: cover; 
     background-position: center; 
@@ -114,10 +102,10 @@
     border-top: 1px solid rgba(0,0,0,0.05); 
     display: flex; 
     justify-content: space-around; 
-    align-items: center;
-    
-    /* 让图标在 padding 之上的区域居中 */
-    align-content: flex-start;
+    align-items: center; 
+    z-index: 1000; 
+    transition: transform 0.3s ease;
+    box-sizing: border-box;
 }
 
 
