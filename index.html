@@ -87,31 +87,30 @@
     .iv-btn { background: rgba(255,255,255,0.2); color: #fff; padding: 8px 20px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(10px); cursor: pointer; font-size: 0.96rem; font-weight: bold; display: flex; align-items: center; gap: 5px; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-            .bottom-bar { 
-        position: fixed; bottom: 0; left: 0; width: 100%; 
-        
-        /* 强制瘦身开始 */
-        /* 去掉顶部内边距，靠 flex 自动垂直居中 */
-        padding-top: 0; 
-        
-        /* 核心修改：与其加满34px安全区，不如只加一半(约15px)，既不挡手势条，又显瘦 */
-        /* 如果手机不支持 safe-area (旧手机)，就给 10px */
-        padding-bottom: max(10px, calc(env(safe-area-inset-bottom) / 2));
-        
-        /* 限制一下内容区域的高度，防止图标撑得太高 */
-        height: 55px;
-        /* 强制瘦身结束 */
+         .bottom-bar { 
+    position: fixed; 
+    bottom: 0; 
+    left: 0; 
+    width: 100%; 
+    padding-top: 0; 
+    
+    /* 修复 iOS PWA 模式底部上移问题 */
+    padding-bottom: env(safe-area-inset-bottom, 10px);
+    
+    height: 55px;
+    background: var(--bottom-bar-bg); 
+    background-size: cover; 
+    background-position: center; 
+    backdrop-filter: blur(10px); 
+    border-top: 1px solid rgba(0,0,0,0.05); 
+    display: flex; 
+    justify-content: space-around; 
+    align-items: center; 
+    z-index: 1000; 
+    transition: transform 0.3s ease; 
+    box-sizing: content-box; 
+}
 
-        background: var(--bottom-bar-bg); 
-        background-size: cover; background-position: center; 
-        backdrop-filter: blur(10px); 
-        border-top: 1px solid rgba(0,0,0,0.05); 
-        display: flex; justify-content: space-around; align-items: center; 
-        z-index: 1000; transition: transform 0.3s ease; 
-        
-        /* 确保高度计算包含 padding */
-        box-sizing: content-box; 
-    }
 
 
     .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #999; width: 20%; height: 100%; cursor: pointer; }
