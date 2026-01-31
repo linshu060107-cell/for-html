@@ -87,16 +87,20 @@
     .iv-btn { background: rgba(255,255,255,0.2); color: #fff; padding: 8px 20px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(10px); cursor: pointer; font-size: 0.96rem; font-weight: bold; display: flex; align-items: center; gap: 5px; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .bottom-bar { 
+            .bottom-bar { 
         position: fixed; bottom: 0; left: 0; width: 100%; 
         
-        /* 修改开始：不再强制高度，而是用 padding 撑开，更自然 */
-        height: auto; 
-        /* 顶部给 10px 呼吸空间 */
-        padding-top: 10px; 
-        /* 底部智能计算：如果有安全区，稍微减少一点留白(减去10px)，让它看起来沉底一点；如果没有安全区，默认留 10px */
-        padding-bottom: calc(max(10px, var(--safe-bottom) - 8px));
-        /* 修改结束 */
+        /* 强制瘦身开始 */
+        /* 去掉顶部内边距，靠 flex 自动垂直居中 */
+        padding-top: 0; 
+        
+        /* 核心修改：与其加满34px安全区，不如只加一半(约15px)，既不挡手势条，又显瘦 */
+        /* 如果手机不支持 safe-area (旧手机)，就给 10px */
+        padding-bottom: max(10px, calc(env(safe-area-inset-bottom) / 2));
+        
+        /* 限制一下内容区域的高度，防止图标撑得太高 */
+        height: 55px;
+        /* 强制瘦身结束 */
 
         background: var(--bottom-bar-bg); 
         background-size: cover; background-position: center; 
@@ -104,7 +108,11 @@
         border-top: 1px solid rgba(0,0,0,0.05); 
         display: flex; justify-content: space-around; align-items: center; 
         z-index: 1000; transition: transform 0.3s ease; 
+        
+        /* 确保高度计算包含 padding */
+        box-sizing: content-box; 
     }
+
 
     .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #999; width: 20%; height: 100%; cursor: pointer; }
     .nav-item.active { color: var(--text-main); }
