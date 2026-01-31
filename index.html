@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#ffffff">
 <link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="https://i.postimg.cc/hjzqYqF9/IMG-2181.jpg">
 <title>我的珍藏 - 全屏透明版</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
@@ -667,7 +668,21 @@ body {
     <div id="view-theme" class="view">
         <div class="theme-page">
             <h2 style="margin-bottom:20px;">设置与备份</h2>
-            
+            <!-- 存储空间 -->
+<div id="storage-bar-container" style="margin-bottom:20px; padding:15px; background:#f9f9f9; border-radius:10px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span style="font-weight:500; color:#333;">存储空间</span>
+        <span id="storage-text" style="font-size:0.81rem; color:#666;">计算中...</span>
+    </div>
+    <div style="width:100%; height:8px; background:#e0e0e0; border-radius:4px; overflow:hidden;">
+        <div id="storage-bar" style="height:100%; width:0%; background:linear-gradient(90deg, #4CAF50, #8BC34A); border-radius:4px; transition:width 0.5s ease;"></div>
+    </div>
+    <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:0.74rem; color:#999;">
+        <span id="storage-used">已用: --</span>
+        <span id="storage-available">可用: --</span>
+    </div>
+</div>
+
             <div style="font-size:12px; color:#999; margin:20px 0 8px;">数据导出</div>
             <div class="btn-white" onclick="DBMgr.showExportYearMenu()">
                 <span>备份数据 (支持选择保存位置)</span>
@@ -2127,6 +2142,9 @@ body {
         if(localStorage.getItem('profile_id')) document.getElementById('userId').innerText = localStorage.getItem('profile_id');
         if(localStorage.getItem('profile_ip')) document.getElementById('userIp').innerText = localStorage.getItem('profile_ip');
         ThemeMgr.init();
+        // 计算存储空间
+        StorageMgr.calculate();
+
         FontMgr.init(); // 初始化字体
         GitHubMgr.init(); // 初始化 GitHub 备份
         HomeRenderer.updateIcon();
@@ -2137,5 +2155,94 @@ body {
             plus.navigator.setFullscreen(true);
         });
     });
+    // 存储空间管理器
+const StorageMgr = {
+    async calculate() {
+        try {
+            // 计算 IndexedDB 使用量
+            let usedBytes = 0;
+            
+            // 获取所有帖子数据大小
+            const posts = await DBMgr.getAll('posts');
+            const collections = await DBMgr.getAll('collections');
+            const htmlItems = await DBMgr.getAll('htmlItems');
+            
+            // 计算帖子大小（包括图片）
+            for (const post of posts) {
+                usedBytes += new Blob([JSON.stringify(post)]).size;
+            }
+            
+            // 计算合集大小
+            for (const col of collections) {
+                usedBytes += new Blob([JSON.stringify(col)]).size;
+            }
+            
+            // 计算 HTML 项目大小
+            for (const item of htmlItems) {
+                usedBytes += new Blob([JSON.stringify(item)]).size;
+            }
+            
+            // 计算主题设置大小
+            const themeKeys = ['bottomBarBg', 'globalBg', 'postBg', 'navIcons', 'appFont', 'appFontSize', 'customFonts'];
+            for (const key of themeKeys) {
+                const val = localStorage.getItem(key);
+                if (val) usedBytes += new Blob([val]).size;
+            }
+            
+            // 尝试获取存储配额（如果浏览器支持）
+            let quota = 0;
+            if (navigator.storage && navigator.storage.estimate) {
+                const estimate = await navigator.storage.estimate();
+                quota = estimate.quota || 0;
+                // 如果能获取到更准确的使用量，使用它
+                if (estimate.usage) {
+                    usedBytes = estimate.usage;
+                }
+            }
+            
+            // 如果无法获取配额，假设为 100MB（保守估计）
+            if (!quota) quota = 100 * 1024 * 1024;
+            
+            this.updateUI(usedBytes, quota);
+            
+        } catch (e) {
+            console.error('计算存储空间失败:', e);
+            document.getElementById('storage-text').textContent = '无法计算';
+        }
+    },
+    
+    updateUI(used, total) {
+        const percent = Math.min((used / total) * 100, 100);
+        const bar = document.getElementById('storage-bar');
+        const text = document.getElementById('storage-text');
+        const usedEl = document.getElementById('storage-used');
+        const availEl = document.getElementById('storage-available');
+        
+        // 更新进度条
+        bar.style.width = percent.toFixed(1) + '%';
+        
+        // 根据使用量改变颜色
+        if (percent > 80) {
+            bar.style.background = 'linear-gradient(90deg, #f44336, #ff5722)';
+        } else if (percent > 60) {
+            bar.style.background = 'linear-gradient(90deg, #ff9800, #ffc107)';
+        } else {
+            bar.style.background = 'linear-gradient(90deg, #4CAF50, #8BC34A)';
+        }
+        
+        // 格式化显示
+        text.textContent = this.formatSize(used) + ' / ' + this.formatSize(total);
+        usedEl.textContent = '已用: ' + this.formatSize(used);
+        availEl.textContent = '可用: ' + this.formatSize(total - used);
+    },
+    
+    formatSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+    }
+};
+
 </script>
 </body>
