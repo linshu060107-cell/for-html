@@ -668,10 +668,6 @@ body {
     <div id="view-theme" class="view">
         <div class="theme-page">
             <h2 style="margin-bottom:20px;">设置与备份</h2>
-              <div id="view-theme" class="view">
-        <div class="theme-page">
-            <h2 style="margin-bottom:20px;">设置与备份</h2>
-            
             <!-- 新增：存储空间展示卡片 -->
             <div onclick="updateStorageInfo()" style="background:#fff; border-radius:12px; padding:15px; margin-bottom:25px; box-shadow:0 2px 10px rgba(0,0,0,0.03); border:1px solid #f0f0f0;">
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:0.9rem; color:#333; font-weight:bold;">
@@ -687,10 +683,6 @@ body {
                 </div>
             </div>
             <!-- 新增结束 -->
-
-            <div style="font-size:12px; color:#999; margin:20px 0 8px;">数据导出</div>
-
-
             <div style="font-size:12px; color:#999; margin:20px 0 8px;">数据导出</div>
             <div class="btn-white" onclick="DBMgr.showExportYearMenu()">
                 <span>备份数据 (支持选择保存位置)</span>
@@ -2162,7 +2154,7 @@ body {
             plus.navigator.setFullscreen(true);
         });
     });
-  // === 存储空间检测函数 ===
+// === 存储空间检测函数 ===
 async function updateStorageInfo() {
     if ('storage' in navigator && 'estimate' in navigator.storage) {
         try {
